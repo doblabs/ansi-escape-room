@@ -5,7 +5,8 @@
 
 import time
 from random import randint
-from ansi_escape_room import fg, bg, attr
+
+from ansi_escape_room import attr, bg, fg
 from ansi_escape_room.hex import HEX, _xterm_colors
 
 

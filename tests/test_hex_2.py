@@ -4,6 +4,7 @@
 """Test the shorthand #abc hex expansion"""
 
 import time
+
 from ansi_escape_room.hex import HEX
 
 

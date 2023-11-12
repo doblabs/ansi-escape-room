@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import platform
-
-from .hex import HEX
 import sys
 
+from .hex import HEX
 
 TTY_AWARE = False
 IS_TTY = sys.stdout.isatty() and sys.stderr.isatty()
@@ -423,7 +422,7 @@ class colored(object):
         if _win_vterm_mode is False:
             return
 
-        from ctypes import windll, c_int, byref, c_void_p
+        from ctypes import byref, c_int, c_void_p, windll
 
         ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
         INVALID_HANDLE_VALUE = c_void_p(-1).value
