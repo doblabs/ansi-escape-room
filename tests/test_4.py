@@ -7,7 +7,6 @@ from ansi_escape_room import fore, back, style
 
 
 def main():
-
     print(fore.BLACK + "Hello World !!!" + style.RESET)
     print(fore.RED + "Hello World !!!" + style.RESET)
     print(fore.GREEN + "Hello World !!!" + style.RESET)
@@ -521,6 +520,7 @@ def main():
     print(back.GREY_85 + "Hello World !!!" + style.RESET)
     print(back.GREY_89 + "Hello World !!!" + style.RESET)
     print(back.GREY_93 + "Hello World !!!" + style.RESET)
+
 
 if __name__ == "__main__":
     main()

@@ -12,6 +12,7 @@ IS_TTY = sys.stdout.isatty() and sys.stderr.isatty()
 
 _win_vterm_mode = None
 
+
 # From:
 #   https://github.com/ubernostrum/webcolors
 def _hex_to_rgb(hex_value):
@@ -23,18 +24,21 @@ def _hex_to_rgb(hex_value):
     return (int_value >> 16, int_value >> 8 & 0xFF, int_value & 0xFF)
 
 
-def _rgb_to_hex(rgb_triplet, delim=''):
+def _rgb_to_hex(rgb_triplet, delim=""):
     """
     Convert a 3-tuple of integers, suitable for use in an ``rgb()``
     color triplet, to a normalized hexadecimal value for that color.
     """
     return "{:02x}{}{:02x}{}{:02x}".format(
-        rgb_triplet[0], delim, rgb_triplet[1], delim, rgb_triplet[2],
+        rgb_triplet[0],
+        delim,
+        rgb_triplet[1],
+        delim,
+        rgb_triplet[2],
     )
 
 
 class colored(object):
-
     ESC = "\x1b["
 
     END = "m"
@@ -336,8 +340,8 @@ class colored(object):
     def __init__(self, color):
         self.color = color
         self.enable_windows_terminal_mode()
-        self.HEX = ''
-        self.RGB = ''
+        self.HEX = ""
+        self.RGB = ""
         if str(color).startswith("#"):
             if not colored.USE_TRUE_COLORS:
                 # Convert #RRGGBB back to 0-255 ANSI color code (as string, not int).
@@ -376,7 +380,7 @@ class colored(object):
             color = self.reserve_paint[str(self.color)]
             return code + colored.PAINT[color] + colored.END
         elif self.HEX:
-             return code + str(self.HEX) + colored.END
+            return code + str(self.HEX) + colored.END
         elif self.RGB:
             return "{}38;2;{};{};{}{}".format(
                 colored.ESC, self.RGB[0], self.RGB[1], self.RGB[2], colored.END
@@ -394,7 +398,7 @@ class colored(object):
             color = self.reserve_paint[str(self.color)]
             return code + colored.PAINT[color] + colored.END
         elif self.HEX:
-             return code + str(self.HEX) + colored.END
+            return code + str(self.HEX) + colored.END
         elif self.RGB:
             return "{}48;2;{};{};{}{}".format(
                 colored.ESC, self.RGB[0], self.RGB[1], self.RGB[2], colored.END
@@ -407,19 +411,20 @@ class colored(object):
         self.reserve_paint = dict(zip(colored.PAINT.values(), colored.PAINT.keys()))
 
     def enable_windows_terminal_mode(self):
-        '''Enable virtual terminal processing in windows terminal. Does
+        """Enable virtual terminal processing in windows terminal. Does
         nothing if not on Windows. This is based on the rejected
-        enhancement <https://bugs.python.org/issue29059>.'''
+        enhancement <https://bugs.python.org/issue29059>."""
         global _win_vterm_mode
         if _win_vterm_mode != None:
             return _win_vterm_mode
 
         # Note: Cygwin should return something like "CYGWIN_NT..."
-        _win_vterm_mode = platform.system().lower() == 'windows'
+        _win_vterm_mode = platform.system().lower() == "windows"
         if _win_vterm_mode == False:
             return
 
         from ctypes import windll, c_int, byref, c_void_p
+
         ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
         INVALID_HANDLE_VALUE = c_void_p(-1).value
         STD_OUTPUT_HANDLE = c_int(-11)
@@ -446,6 +451,7 @@ class colored(object):
             _win_vterm_mode = False
             return
 
+
 def attr(color):
     """alias for colored().attribute()"""
     return colored(color).attribute()
@@ -469,8 +475,8 @@ def stylize(text, styles, reset=True):
 
 def _c0wrap(styles):
     """wrap a set of ANSI styles in C0 control codes for readline safety."""
-    C0_SOH = '\x01'   # mark the beginning of nonprinting characters
-    C0_STX = '\x02'   # mark the end of nonprinting characters
+    C0_SOH = "\x01"  # mark the beginning of nonprinting characters
+    C0_STX = "\x02"  # mark the end of nonprinting characters
     return "{}{}{}".format(C0_SOH, "".join(styles), C0_STX)
 
 
@@ -482,6 +488,7 @@ def stylize_interactive(text, styles, reset=True):
     # see: https://gitlab.com/dslackw/colored/issues/5
     terminator = _c0wrap(attr("reset")) if reset else ""
     return "{}{}{}".format(_c0wrap(styles), text, terminator)
+
 
 def set_tty_aware():
     """Makes all interactions here tty aware.  This means that if either

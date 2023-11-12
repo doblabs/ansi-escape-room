@@ -8,9 +8,7 @@ from ansi_escape_room import fg, bg, attr
 
 
 def main():
-
     colors = (
-
         "#000000",
         "#800000",
         "#008000",
@@ -266,21 +264,12 @@ def main():
         "#D0D0D0",
         "#DADADA",
         "#E4E4E4",
-        "#EEEEEE"
-
+        "#EEEEEE",
     )
 
     for color in colors:
-        print(
-            "{}This text is colored: {}{}".format(
-                fg(color),
-                color,
-                attr("reset")))
-        print(
-            "{}This text is colored: {}{}".format(
-                bg(color),
-                color,
-                attr("reset")))
+        print("{}This text is colored: {}{}".format(fg(color), color, attr("reset")))
+        print("{}This text is colored: {}{}".format(bg(color), color, attr("reset")))
         time.sleep(0.1)
 
 
