@@ -281,8 +281,11 @@ def HEX(color):
     # The reference color
     r, g, b = (int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16))
 
-    cube = lambda x: x * x
-    f = lambda hex_val, ref: cube(int(hex_val, 16) - ref)
+    def cube(x):
+        return x * x
+
+    def f(hex_val, ref):
+        return cube(int(hex_val, 16) - ref)
 
     min_cube_d = cube(0xFFFFFF)
     nearest = "15"

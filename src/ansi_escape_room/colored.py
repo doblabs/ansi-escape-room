@@ -415,12 +415,12 @@ class colored(object):
         nothing if not on Windows. This is based on the rejected
         enhancement <https://bugs.python.org/issue29059>."""
         global _win_vterm_mode
-        if _win_vterm_mode != None:
+        if _win_vterm_mode is not None:
             return _win_vterm_mode
 
         # Note: Cygwin should return something like "CYGWIN_NT..."
         _win_vterm_mode = platform.system().lower() == "windows"
-        if _win_vterm_mode == False:
+        if _win_vterm_mode is False:
             return
 
         from ctypes import windll, c_int, byref, c_void_p

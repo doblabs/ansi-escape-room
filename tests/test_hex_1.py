@@ -82,7 +82,6 @@ def main():
     # "non-deterministic check that it doesn't throw any exceptions"
     try:
         T_sta = time.perf_counter()
-        from random import randint
 
         for y in range(0, 20):
             for x in range(0, 30):
@@ -94,7 +93,7 @@ def main():
         dT = time.perf_counter() - T_sta
         print("Lookup time: %0.4f s => %0.4f s/lookup" % (dT, dT / (2 * 30 * 20)))
     except Exception as e:
-        print("Whopsie, something %s-ish went wrong: " % (e.__class__.__name__, e))
+        print("Whopsie, something %s-ish went wrong: %s" % (e.__class__.__name__, e))
         all_ok = False
 
     return all_ok
