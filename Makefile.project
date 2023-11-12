@@ -1,0 +1,11 @@
+# vim:tw=0:ts=2:sw=2:noet:ft=make
+# Author: Landon Bouma
+# Project: https://github.com/doblabs/ansi-escape-room#🐰
+# License: MIT
+
+EAPP_MAKEFILE_PYDOCSTYLE_DISABLE ?= true
+
+EAPP_MAKEFILE_LINKCHECK_DISABLE ?= true
+
+EAPP_MAKEFILE_DOCS_DISABLE ?= true
+
