@@ -8,12 +8,15 @@ import time
 from ansi_escape_room import attr, bg, fg
 
 
-def main():
+def test_1(do_sleep=False):
     for color in range(0, 256):
         print("%s This text is colored %s" % (fg(color), attr("reset")))
         print("%s This background is colored %s" % (bg(color), attr("reset")))
-        time.sleep(0.1)
+        do_sleep and time.sleep(0.1)
+
+    assert True
 
 
 if __name__ == "__main__":
-    main()
+    do_sleep = True
+    test_1(do_sleep)

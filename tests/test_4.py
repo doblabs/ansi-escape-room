@@ -521,6 +521,8 @@ def main():
     print(back.GREY_89 + "Hello World !!!" + style.RESET)
     print(back.GREY_93 + "Hello World !!!" + style.RESET)
 
+    assert True
+
 
 if __name__ == "__main__":
     main()

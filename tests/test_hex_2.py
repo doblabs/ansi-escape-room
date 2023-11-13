@@ -8,7 +8,7 @@ import time
 from ansi_escape_room.hex import HEX
 
 
-def main():
+def test_hex_2():
     all_ok = True
     try:
         T_sta = time.perf_counter()
@@ -33,9 +33,8 @@ def main():
         traceback.print_exc()
         all_ok = False
 
-    return all_ok
+    assert all_ok
 
 
 if __name__ == "__main__":
-    ok = main()
-    exit(0 if ok else 1)
+    test_hex_2()

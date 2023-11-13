@@ -23,7 +23,7 @@ def compare_with_expected(in_hex, expected):
     return match
 
 
-def main():
+def test_hex_1():
     print("            Nearest   Expected")
     test_set = {
         "1": ("#7f0000", "#800000", "#810000"),
@@ -97,9 +97,8 @@ def main():
         print("Whopsie, something %s-ish went wrong: %s" % (e.__class__.__name__, e))
         all_ok = False
 
-    return all_ok
+    assert all_ok
 
 
 if __name__ == "__main__":
-    ok = main()
-    exit(0 if ok else 1)
+    test_hex_1()
