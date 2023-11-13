@@ -1,16 +1,20 @@
+.. image:: docs/ansi-escape-room--logo.png
+    :target: https://github.com/landonb/ansi-escape-room.
+
+.. |colored| replace:: **Colored**
+.. _colored: https://dslackw.gitlab.io/colored
+
+**This is a fork of** |colored|_
+
+*Please support that project instead!*
+
+About
+-----
+
 Very simple Python library for color and formatting in terminal.
 Collection of color codes and names for 256 color terminal setups.
 The following is a list of 256 colors for Xterm, containing an example
 of the displayed color, Xterm Name, Xterm Number and HEX.
-
-(This project is forked from
-`colored <https://gitlab.com/dslackw/colored>`__.)
-
-..         https://gitlab.com/dslackw/images/raw/master/colored/logo.png
-.. image:: docs/ansi-escape-room--logo.png
-    :target: https://github.com/landonb/ansi-escape-room.
-
-.. `[CHANGELOG] <https://gitlab.com/dslackw/colored/blob/master/CHANGELOG>`_
 
 Video Demo
 ----------
