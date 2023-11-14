@@ -1,5 +1,5 @@
 .. image:: docs/ansi-escape-room--logo.png
-    :target: https://github.com/landonb/ansi-escape-room.
+    :target: https://github.com/landonb/ansi-escape-room#🐰
 
 .. |colored| replace:: **Colored**
 .. _colored: https://dslackw.gitlab.io/colored
