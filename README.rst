@@ -1,4 +1,4 @@
-.. image:: docs/ansi-escape-room--logo.png
+.. image:: https://raw.githubusercontent.com/doblabs/ansi-escape-room/release/docs/ansi-escape-room--logo.png
     :target: https://github.com/landonb/ansi-escape-room#🐰
 
 .. |colored| replace:: **Colored**
