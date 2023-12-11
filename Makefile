@@ -31,8 +31,8 @@ EDITABLE_DIR ?= .pyproject-editable
 # Local "editable" virtualenv directory (`make develop`).
 VENV_NAME ?= .venv-$(PACKAGE_NAME)
 
-# The "editable" virtualenv Python version (`make develop`).
-# - USYNC: Keep current with tox.ini's `basepython`.
+# USYNC: workflows/ (PYTHON_VERSION), tox.ini (basepython), Makefile (VENV_PYVER).
+# - The "editable" virtualenv Python version (`make develop`).
 VENV_PYVER ?= 3.11
 
 # Additional `python -m venv` options.
@@ -43,7 +43,7 @@ VENV_PYVER ?= 3.11
 #
 #     VENV_ARGS = --system-site-packages
 #
-# SAVVY: Rather than edit this file, edit Makefile.project.
+# USAGE: Set this from Makefile.project.
 VENV_ARGS =
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -55,7 +55,16 @@ VENV_ARGS =
 # and the only recourse you find yourself with is moving the 'bar'
 # dependencies to their own pyproject.toml).
 
-PYPROJECT_DOC8_DIR = .pyproject-doc8
+PYPROJECT_DOC8_DIR ?= .pyproject-doc8
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+
+# Use a special pyproject.toml to install our deps from test.PyPI
+# and to include prereleases, so user can end-to-end test alphas.
+
+PYPROJECT_PRERELEASE_DIR ?= .pyproject-prerelease
+
+VENV_NAME_PRERELEASE ?= .venv-alpha
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
@@ -314,8 +323,9 @@ clean-test:
 
 build: _depends_active_venv clean-build
 	poetry build
-	ls -l dist
-	@echo 'HINT: Run `make dist-list` to bdist and sdist contents.'
+	@echo "ls dist/"
+	@command ls -lGAF "dist/" | tail +2 | sed 's/^/  /'
+	@echo 'HINT: Run `make dist-list` to show bdist and sdist contents.'
 .PHONY: build
 
 dist: build
@@ -450,41 +460,8 @@ release: publish
 #  .ONESHELL:
 
 install: _warn_unless_virtualenvwrapper
-	eval "$$($$(which pyenv) init -)"; \
-	pyenv shell --unset; \
-	\
-	project_dir="$$(pwd)"; \
-	workon_home="$${WORKON_HOME:-$${HOME}/.virtualenvs}"; \
-	mkdir -p "$${workon_home}"; \
-	cd "$${workon_home}"; \
-	if [ ! -d "$(PACKAGE_NAME)" ]; then \
-		python3 -m venv $(VENV_ARGS) "$(PACKAGE_NAME)"; \
-		echo "$${project_dir}" > "$(PACKAGE_NAME)/.project"; \
-	fi; \
-	. "$(PACKAGE_NAME)/bin/activate"; \
-	cd "$${project_dir}"; \
-	\
-	echo; \
-	echo "pip install -U pip setuptools"; \
-	pip install -U pip setuptools; \
-	\
-	echo; \
-	echo "pip install poetry"; \
-	pip install poetry; \
-	\
-	echo; \
-	echo "poetry self add 'poetry-dynamic-versioning[plugin]'"; \
-	poetry self add "poetry-dynamic-versioning[plugin]"; \
-	\
-	echo; \
-	echo "poetry install"; \
-	poetry install; \
-	\
-	echo; \
-	echo "Ready to rock:"; \
-	echo "  . $${workon_home}/$(PACKAGE_NAME)/bin/activate"; \
-	echo "Or if using virtualenvwrapper:"; \
-	echo "  workon $(PACKAGE_NAME)";
+	@. "$(MAKETASKS_SH)" && \
+		install_release "$(PACKAGE_NAME)" "$(VENV_ARGS)"
 .PHONY: install
 
 # Aka uninstall, sorta.
@@ -507,6 +484,53 @@ _warn_unless_virtualenvwrapper:
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
+install-prerelease: _depends_active_venv_unless_ci
+	@. "$(MAKETASKS_SH)" && \
+		install_prerelease \
+			"$(VENV_NAME_PRERELEASE)" \
+			"$(VENV_ARGS)" \
+			"$(VENV_NAME)" \
+			"$(PYPROJECT_PRERELEASE_DIR)" \
+			"$(EDITABLE_PJS)" \
+			"$(SOURCE_DIR)"
+.PHONY: install-prerelease
+
+prepare-poetry-prerelease: _depends_active_venv_unless_ci
+	@. "$(MAKETASKS_SH)" && \
+		prepare_poetry_prerelease \
+			"$(PYPROJECT_PRERELEASE_DIR)" \
+			"$(EDITABLE_PJS)" \
+			"$(SOURCE_DIR)"
+.PHONY: prepare-poetry-prerelease
+
+build-prerelease: _depends_active_venv clean-build
+	@if [ ! -f "$(PYPROJECT_PRERELEASE_DIR)/poetry.lock" ] \
+		|| [ ! -f "$(PYPROJECT_PRERELEASE_DIR)/pyproject.toml" ] \
+	; then \
+		>&2 echo "ERROR: Please run \`make prepare-poetry-prerelease\`"; \
+		\
+		exit 1; \
+	fi
+	@command cp -f "$(PYPROJECT_PRERELEASE_DIR)/poetry.lock" "poetry.lock"
+	@command cp -f "$(PYPROJECT_PRERELEASE_DIR)/pyproject.toml" "pyproject.toml"
+	@echo "poetry build"
+	@success=false; \
+	if poetry build; then \
+		success=true; \
+		touch "dist/.pre-release-build"; \
+		echo "ls dist/"; \
+		command ls -lGAF "dist/" | tail +2 | sed 's/^/  /'; \
+		echo 'HINT: Run `make dist-list` to show bdist and sdist contents.'; \
+	fi; \
+	git checkout -- "poetry.lock"; \
+	git checkout -- "pyproject.toml"; \
+	if ! $${success}; then \
+		exit 1; \
+	fi
+PHONY: build-prerelease
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+
 # - CPYST: To see list of available Python versions, try:
 #     pyenv install -l
 #     pyenv install -l | grep '^ \+3\.'
@@ -517,27 +541,36 @@ _warn_unless_virtualenvwrapper:
 #	    but that's some spectacular magic:
 #	      sed 's/^ \+\([0-9]\+\.[0-9]\+\.\([0-9]\+\)\)/\2 \1/'
 
-# USYNC: Keep synced with tox.ini [testenv:py*] jobs.
+# USYNC: checks.yml (python-version), tox.ini (envlist), Makefile (pyenv-install-pys).
 # - -s: --skip-existing
 pyenv-install-pys:
 	@pyenv install -s 3.8
 	@pyenv install -s 3.9
 	@pyenv install -s 3.10
 	@pyenv install -s 3.11
+	@pyenv install -s 3.12
 	@# Pre-release Python only installable by full version.
-	@# This installs the non-dev version, e.g., '3.12.0a5', not '3.12-dev'.
-	@pyenv install -s $$(pyenv install -l | grep '^ \+3\.12\.' | tail -1)
+	@# This installs the non-dev version, e.g., '3.13.0a1', not '3.13-dev'.
+	@pyenv install -s $$(pyenv install -l | grep '^ \+3\.13\.' | tail -1)
 .PHONY: pyenv-install-pys
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
 _depends_active_venv:
 	@if [ -z "${VIRTUAL_ENV}" ]; then \
-		>&2 echo "ERROR: Run from a virtualenv!"; \
+		>&2 echo; \
+		>&2 echo "ERROR: 💣 Run from a virtualenv!"; \
+		>&2 echo; \
 		\
 		exit 1; \
 	fi
 .PHONY: _depends_active_venv
+
+_depends_active_venv_unless_ci:
+	@if ! $${CI:-false}; then \
+		make _depends_active_venv; \
+	fi;
+.PHONY: _depends_active_venv_unless_ci
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
@@ -553,7 +586,12 @@ ifndef EAPP_MAKEFILE_DEVELOP_DEFINED
 
 develop: editables editable
 	@. "$(MAKETASKS_SH)" && \
-		make_develop "$(VENV_NAME)" "$(VENV_PYVER)" "$(VENV_ARGS)" "$(EDITABLE_DIR)"
+		make_develop \
+			"$(VENV_NAME)" \
+			"$(VENV_PYVER)" \
+			"$(VENV_ARGS)" \
+			"$(EDITABLE_DIR)" \
+			"$(EDITABLE_PJS)"
 	@echo
 	@echo "$(VENV_NAME) is ready — if \`workon\` is installed, run that"
 .PHONY: develop
@@ -583,6 +621,7 @@ EDITABLE_PJS = \
 	click-hotoffthehamster \
 	click-hotoffthehamster-alias \
 	config-decorator \
+	easy-as-pypi \
 	easy-as-pypi-appdirs \
 	easy-as-pypi-config \
 	easy-as-pypi-getver \
@@ -682,41 +721,26 @@ EDITABLE_PJS = \
 #         - The ../SOURCE_DIR symlink (possibly src -> ../src) will steer
 #           Poetry to the correct location.
 
+# The awk match is checking for a dependency line like one of these:
+#
+#     easy-as-pypi = "^1.2.3"
+#     easy-as-pypi = "==1.2.3"
+#     easy-as-pypi = "> 1.2.3"
+#     easy-as-pypi = "<= 1.2.3"
+#                     ||||
+#                     |||└→ [0-9]+
+#                     ||└─→ \s*
+#                     ||
+#                     └┴──→ [<>=^]{1,2}
+#
+# and not like this:
+#
+#     [tool.poetry.scripts]
+#     easy-as-pypi = "easy_as_pypi:run"
+
 editable:
-	@mkdir -p $(EDITABLE_DIR)
-	@#
-	@echo \
-		"# This file is automatically @generated by Makefile and should not be changed by hand.\n" \
-		> $(EDITABLE_DIR)/pyproject.toml
-	@#
-	@concat_pjs=""; \
-	pyprojs_full="$$(echo "$(EDITABLES_ROOT)" | sed "s@~@$${HOME}@")"; \
-	for project in $(EDITABLE_PJS); do \
-		if [ -d "$${pyprojs_full}/$${project}" ]; then \
-			concat_pjs="$${concat_pjs}$${project}|"; \
-		else \
-			echo "ALERT: Missing project: $${pyprojs_full}/$${project}"; \
-		fi; \
-	done; \
-	concat_pjs="$$(echo "$${concat_pjs}" | sed 's@|$$@@')" ; \
-	sed -E \
-		-e 's#^(packages = \[\{include = ")([^"]*"}])#\1../\2#' \
-		-e 's#^(packages = \[\{include = "[^"]*", from = ")#\1../#' \
-		-e 's#^(readme = ")#\1../#' \
-		pyproject.toml \
-	| awk \
-			-v pyprojs_root="$(EDITABLES_ROOT)" \
-			' \
-				match($$0, /^('$${concat_pjs}')( |$$)/, matches) { \
-					print matches[1] " = {path = \"" pyprojs_root "/" matches[1] "/$(EDITABLE_DIR)\", develop = true}"; \
-					next; \
-				} 1 \
-			' - \
-		>> $(EDITABLE_DIR)/pyproject.toml;
-	@#
-	@editable_link="$(EDITABLE_DIR)/$(SOURCE_DIR)"; \
-	[ -h "$${editable_link}" ] && command rm "$${editable_link}"; \
-	command ln -s "../$(SOURCE_DIR)" "$${editable_link}";
+	@. "$(MAKETASKS_SH)" && \
+		make_editable "$(EDITABLES_ROOT)" "$(EDITABLE_DIR)" "$(SOURCE_DIR)" "$(EDITABLE_PJS)"
 .PHONY: editable
 
 # USAGE: Call `make editables` to call `make editable` on each of "our" projects
@@ -983,9 +1007,10 @@ endif
 #
 #     pytest --pdb -vv -k test_function tests/
 #
-#                      ^^^^^^^^^^^^^^^^  Test specific function or class
-#                  ^^^                   Increase verbosity
-#            ^^^^^                       Start pdb on error or KeyboardInterrupt
+#                                       ^^^^^^ Test specific path or file
+#                      ^^ ^^^^^^^^^^^^^ Test specific function or class
+#                  ^^^ Increase verbosity
+#            ^^^^^ Start pdb on error or KeyboardInterrupt
 
 # SAVVY: By default, pipeline returns exit value from final command, e.g.,
 #
