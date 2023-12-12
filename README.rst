@@ -6,7 +6,38 @@
 
 **This is a fork of** |colored|_
 
-*Please support that project instead!*
+.. CXREF:
+   https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/adding-a-workflow-status-badge
+
+.. image:: https://github.com/doblabs/ansi-escape-room/actions/workflows/checks-unspecial.yml/badge.svg?branch=release
+  :target: https://github.com/doblabs/ansi-escape-room/actions/workflows/checks-unspecial.yml/badge.svg?branch=release
+  :alt: Build Status
+
+.. CXREF: https://app.codecov.io/gh/doblabs/ansi-escape-room/settings/badge
+
+.. image:: https://codecov.io/gh/doblabs/ansi-escape-room/graph/badge.svg?token=0t1hfmCDws
+  :target: https://codecov.io/gh/doblabs/ansi-escape-room
+  :alt: Coverage Status
+
+.. image:: https://readthedocs.org/projects/ansi-escape-room/badge/?version=latest
+  :target: https://ansi-escape-room.readthedocs.io/en/latest/
+  :alt: Documentation Status
+
+.. image:: https://img.shields.io/github/v/release/doblabs/ansi-escape-room.svg?style=flat
+  :target: https://github.com/doblabs/ansi-escape-room/releases
+  :alt: GitHub Release Status
+
+.. image:: https://img.shields.io/pypi/v/ansi-escape-room.svg
+  :target: https://pypi.org/project/ansi-escape-room/
+  :alt: PyPI Release Status
+
+.. image:: https://img.shields.io/pypi/pyversions/ansi-escape-room.svg
+  :target: https://pypi.org/project/ansi-escape-room/
+  :alt: PyPI Supported Python Versions
+
+.. image:: https://img.shields.io/github/license/doblabs/ansi-escape-room.svg?style=flat
+  :target: https://github.com/doblabs/ansi-escape-room/blob/release/LICENSE
+  :alt: License Status
 
 About
 -----
