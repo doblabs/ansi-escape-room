@@ -9,5 +9,4 @@ from .colored import *  # noqa: F401, F403
 from .fore import *  # noqa: F401, F403
 from .style import *  # noqa: F401, F403
 
-__version_info__ = (1, 4, 2)
-__version__ = "{0}.{1}.{2}".format(*__version_info__)
+__version__ = ""
