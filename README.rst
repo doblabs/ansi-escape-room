@@ -47,11 +47,14 @@ Collection of color codes and names for 256 color terminal setups.
 The following is a list of 256 colors for Xterm, containing an example
 of the displayed color, Xterm Name, Xterm Number and HEX.
 
-Video Demo
-----------
+.. Video Demo
+.. ----------
+..
+.. .. image:: https://gitlab.com/dslackw/colored/-/raw/site/docs/images/ascii_cast.png
+..     :target: https://asciinema.org/a/bgxm6KisSvPkPwMsYLyBBJjth
 
-.. image:: https://gitlab.com/dslackw/images/raw/master/colored/video.png
-    :target: https://asciinema.org/a/bgxm6KisSvPkPwMsYLyBBJjth
+Details
+-------
 
 The following colors works with most terminals and terminals emulators.
 ANSI/VT100 escape sequences can be used in every programming languages.
@@ -349,14 +352,15 @@ Attributes:
 
 256 Colors Foreground (text):
 
-.. image:: https://gitlab.com/dslackw/images/raw/master/colored/256_colors_fg.png
+.. image:: https://gitlab.com/dslackw/colored/-/raw/site/docs/images/256_colors_foreground.png
     :alt: 256 fg colors
 
 256 Colors Background:
 
-.. image:: https://gitlab.com/dslackw/images/raw/master/colored/256_colors_bg.png
+.. image:: https://gitlab.com/dslackw/colored/-/raw/site/docs/images/256_colors_background.png
     :alt: 256 bg colors
 
+https://dslackw.gitlab.io/colored/media/screenshots/
 
 Installation
 ------------
@@ -476,7 +480,8 @@ Import colored module:
     etc.
 
 
-Screenshot:
+.. Screenshot:
+..
+.. .. image:: https://gitlab.com/dslackw/images/raw/master/colored/screenshot-2.png
+..     :alt: example
 
-.. image:: https://gitlab.com/dslackw/images/raw/master/colored/screenshot-2.png
-    :alt: example
